@@ -1,25 +1,30 @@
  const express = require('express');
+ const mongoose = require('mongoose')
  const cors = require('cors')
- const app = express();
+const morgan = require('morgan');
+const authRoutes = require('./routes/auth');
+require('dotenv').config();
+const app = express();
+
+
+//Db connection
+mongoose.connect(process.env.DATABASE_CONNECTION,{
+   useNewUrlParser: true, 
+})
+.then(()=>{
+   console.log('Connected to MongoDB');
+})
+.catch((err)=>{
+    console.log(err)
+  })
+ 
+
 
 app.use(cors())
+app.use(morgan('dev'));
 
- app.get('/api/users', (req, res) => {
-   res.json({
-    users:[
-        {
-            name :"Mithun",
-            age : 25,
-            email : "mithun@example.com"
-        },
-        {
-            name :"Pandiyan",
-            age : 63,
-            email : "pandiyan@example.com"
-        },
-    ],
-   });
- });
+ //routes middleware
+ app.use('/api',authRoutes)
 
  app.listen(8080,()=>{
     console.log("server is running on port 8080")
